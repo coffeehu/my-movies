@@ -241,10 +241,10 @@ export default {
 			position: absolute;
 			width: 74%;
 			height: 50px;
-			
 			top: 0;
 			left: 13%;
 			z-index: 5;
+			opacity: 0.8;
 		}
 
 		.arrow-left{
@@ -311,7 +311,7 @@ export default {
 		.arrow-movie-name{
 			text-align: center;
 			color: #fff;
-			font-size: 10px;
+			font-size: 22px;
 			line-height: 50px;
 			font-weight: 300;
 		}
