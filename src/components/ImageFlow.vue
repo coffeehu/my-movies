@@ -15,7 +15,7 @@
 		<div class="arrow" ref="arrow">
 			<div class="arrow-left" @click="toLeft"></div>
 			<div class="arrow-right" @click="toRight"></div>
-			<div class="arrow-movie-name" ref="arrow-movie-name">hehe</div>
+			<div class="arrow-movie-name" ref="arrow-movie-name"></div>
 		</div>
 	</div>
 </template>
@@ -311,7 +311,7 @@ export default {
 		.arrow-movie-name{
 			text-align: center;
 			color: #fff;
-			font-size: 22px;
+			font-size: 10px;
 			line-height: 50px;
 			font-weight: 300;
 		}
