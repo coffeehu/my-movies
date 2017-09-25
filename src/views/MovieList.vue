@@ -126,7 +126,7 @@ export default {
 }
 .classify .content .movie-list-image{
 	float: left;
-	margin-right: 20px;
+	margin-right: 30px;
 }
 .classify .content .movie-box:after{
  	content: '';
