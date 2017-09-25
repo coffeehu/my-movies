@@ -3,7 +3,7 @@
 		<div class="wrapper" ref="wrapper">
 			<ul class="view" id="view">
 				<li class="display" v-for="(top,index) in tops">
-					<img :src="top.images.large" class="display-img" @click="move(displays[index])" :title="top.title">
+					<img :src="top.images.large" class="display-img" @click="move(displays[index])" >
 				</li>
 			</ul>
 			<ul class="reflection" id="reflection">
@@ -15,7 +15,7 @@
 		<div class="arrow" ref="arrow">
 			<div class="arrow-left" @click="toLeft"></div>
 			<div class="arrow-right" @click="toRight"></div>
-			<div class="arrow-movie-name"><span>热门推荐</span></div>
+			<div class="arrow-movie-name" ref="arrow-movie-name">hehe</div>
 		</div>
 	</div>
 </template>
@@ -26,7 +26,6 @@ export default {
 	data:function(){
 		return {
 			displays:[],
-			n:0
 		}
 	},
 	beforeMount:function(){
@@ -98,7 +97,6 @@ export default {
 			this.img.height = this.img.width * 1.3;
 			this.reflectionItem = this.reflectionEl.getElementsByTagName("canvas")[this.n]; // 画布，真正的倒影图片
 			this.el.instance = this;
-			this.title = this.img.getAttribute("title");
 
 			// 对应的倒影：倒影栏<ul>里的 <li>
 			var li = this.reflectionEl.getElementsByTagName('li')[this.n];
@@ -129,6 +127,12 @@ export default {
 		this.$refs.arrow.style.top = this.$refs.wrapper.clientHeight+'px';
 	},
 	computed:{
+		titles:function(){
+			return this.$store.state.moviesInTheaters.titles;
+		},
+		topTitle:function(){
+			return ""
+		},
 		tops:function(){
 			return this.$store.state.moviesInTheaters.tops;
 		},
@@ -150,6 +154,7 @@ export default {
 		},
 		// el 为 display.el，即 <li>
 		onClickHandler: function(el,scale,interrupt){
+			this.$refs['arrow-movie-name'].innerHTML = '《 '+this.titles[el.instance.n]+' 》';
 			if(interrupt){
 				if(el.root.id) {
 					clearInterval(el.root.id);

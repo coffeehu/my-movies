@@ -11,7 +11,8 @@ export default new Vuex.Store({
 		moviesInTheaters: {
 			tops:[], // 轮播展示用的，6个
 			subjects:[],
-			total:0
+			total:0,
+			titles:[]
 		},
 		moviesComingSoon: {
 			subjects:[],
