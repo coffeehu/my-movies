@@ -311,7 +311,7 @@ export default {
 		.arrow-movie-name{
 			text-align: center;
 			color: #fff;
-			font-size: 24px;
+			font-size: 10px;
 			line-height: 50px;
 			font-weight: 300;
 		}
