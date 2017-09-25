@@ -154,7 +154,7 @@ export default {
 		},
 		// el 为 display.el，即 <li>
 		onClickHandler: function(el,scale,interrupt){
-			//this.$refs['arrow-movie-name'].innerHTML = '《 '+this.titles[el.instance.n]+' 》';
+			this.$refs['arrow-movie-name'].innerHTML = '《 '+this.titles[el.instance.n]+' 》';
 			if(interrupt){
 				if(el.root.id) {
 					clearInterval(el.root.id);
