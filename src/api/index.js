@@ -2,7 +2,8 @@
 // http://api.douban.com/v2/movie/coming_soon
 
 var api = {
-  url: "/api/movie/",
+  //url: "/api/movie/",
+  url: "http://api.douban.com/v2/movie/"
 }
 
 // type: coming_soon 、 in_theaters
