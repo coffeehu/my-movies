@@ -2,7 +2,7 @@
 	<div id="imageFlow">
 		<div class="wrapper" ref="wrapper">
 			<ul class="view" id="view">
-				<li class="display" v-for="(top,index) in tops">
+				<li class="display" v-for="(top,index) in tops" @mouseover="onMouseoverHanlder(displays[index])" @mouseout="onMouseoutHanlder(displays[index])">
 					<img :src="top.images.large" class="display-img" @click="move(displays[index])" >
 				</li>
 			</ul>
@@ -31,7 +31,6 @@ export default {
 	beforeMount:function(){
 	},
 	mounted:function(){
-		
 	},
 	updated:function(){
 		/*=========图片轮播对象的构造函数=========*/
@@ -62,7 +61,24 @@ export default {
 
 			this.time = time;
 			var toRight = true;
-			_component.onClickHandler(this.displays[n].el,this.scale);
+			// 为什么要用 mouseover?
+			/*想象场景：我们点击小图时，调用 onClickHandler，当前元素的isChecked 为 false（这是第一次）；
+			接着会打断定时任务，调用run，run里面又会调用 onClickHandler ，此时 同一个元素的isChecked 为 true。（这是第二次）；
+			然后生成定时任务，n+1,继续循环调用 onClickHandler（这是第三次）...
+
+			上面有什么问题吗？
+			有问题。相当于点击了一个小图，执行了 两次 onClickHandler，并且 同一个元素的isChecked连续产生了两个值， 一次为false，第二次为 true。 不利于我们判断。
+
+			加了 mouseover 后：点击小图，调用 onClickHandler，isChecked 为 false；
+			然后由于当前 mouseover=true，所以不会执行第二次onClickHandler（当然定时任务还在不断循环），所以只会执行一次onClickHandler，且输出 isChecked=false，这符合我们的判断。
+
+			当然第三次循环的时候就会执行 onClickHandler 了，因为下面几个图片的 mouseover 默认都是 false。所以滚动不会受影响
+			*/
+
+			if(!this.displays[n].el.mouseover){
+				_component.onClickHandler(this.displays[n].el,this.scale);
+			}
+			
 			if(n==this.displays.length-1) toRight=false;
 			if(n==0) toRight=true;
 			if(toRight){
@@ -73,7 +89,10 @@ export default {
 
 			var _this = this;
 			this.id = setInterval(function(){
-				_component.onClickHandler(_this.displays[n].el, _this.scale);
+				if(!_this.displays[n].el.mouseover){
+					_component.onClickHandler(_this.displays[n].el, _this.scale);
+				}
+				//_component.onClickHandler(_this.displays[n].el, _this.scale);
 				if(n==_this.displays.length-1) toRight=false;
 				if(n==0) toRight=true;
 				if(toRight){
@@ -141,21 +160,31 @@ export default {
 		},
 	},
 	methods:{
+		onMouseoutHanlder:function(display){
+			display.el.mouseout = true;
+			display.el.mouseover = false;
+		},
+		onMouseoverHanlder:function(display){
+			display.el.mouseover = true;
+			display.el.mouseout = false;
+		},
 		toLeft:function(){
 			if(this.displays[0].root.currentIndex == 0) return;
-			this.move(this.displays[this.displays[0].root.currentIndex-1])
+			this.move(this.displays[this.displays[0].root.currentIndex-1], true)
 		},
 		toRight:function(){
 			if(this.displays[0].root.currentIndex == this.displays.length-1) return;
-			this.move(this.displays[this.displays[0].root.currentIndex+1])
+			this.move(this.displays[this.displays[0].root.currentIndex+1], true)
 		},
-		move:function(display){
-			this.onClickHandler(display.el,display.root.scale,true);
+		move:function(display, isArrow){
+			this.onClickHandler(display.el,display.root.scale,true,isArrow);
 		},
 		// el 为 display.el，即 <li>
-		onClickHandler: function(el,scale,interrupt){
-			this.$refs['arrow-movie-name'].innerHTML = '《 '+this.titles[el.instance.n]+' 》';
-			if(interrupt){
+		// scale 放大倍数
+		// interrupt 是否打断定时循环。 isArrow 是否点击了左右箭头
+		onClickHandler: function(el,scale,interrupt,isArrow){
+			this.$refs['arrow-movie-name'].innerHTML = '《 '+this.titles[el.instance.n]+' 》'; // 显示对应大图的电影名
+			if(interrupt){ // 打断 setInterval 定时任务，从当前的图片重新开始
 				if(el.root.id) {
 					clearInterval(el.root.id);
 					el.root.run(el.n, el.root.time);
@@ -164,6 +193,7 @@ export default {
 			if(!el.isChecked){
 			    var _display = el.parent.getElementsByClassName('display');
 			    var _li = el.reflectionEl.getElementsByTagName('li');
+			    // 所有人正常
 				for(var j=0;j<_display.length;j++){
 					_display[j].style.transform = "scale(1)";
 					_display[j].isChecked = false;
@@ -172,9 +202,11 @@ export default {
 					_li[j].style.transform = "scale(1)"
 					_li[j].style.marginRight = "0px";
 				}
+				// “我自己”放大
 				el.root.currentIndex = el.n;
 				el.style.transform =  "scale("+el.root.scale+")"
 				el.isChecked = true;
+				// transform方法并不会把周围元素挤开，而是覆盖式，所以要自己设置边距。
 				el.style.marginRight = el.clientWidth*(scale-1)+"px";
 
 				el.reflection.style.transform =  "scale("+el.root.scale+")"
@@ -182,6 +214,10 @@ export default {
 
 				var offset = (el.root.el.clientWidth - el.clientWidth*scale)*0.5 - el.n*el.clientWidth;  // 偏移值，让大图处于中间。
 				el.instance.wrapper.style.left = offset+'px';
+			}else{
+				if(!isArrow){  // 说明是点击了大图，而不是点击了箭头
+					alert("go")
+				}
 			}
 		}
 	},
@@ -221,6 +257,7 @@ export default {
 		.view .display-img{
 			display: block;
 			transform-origin: 0 100%;
+			cursor: pointer;
 		}
 
 

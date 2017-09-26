@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1 style="margin:100px">i like</h1>		
+		<h1 style="margin:100px">my record</h1>		
 	</div>
 </template>
 

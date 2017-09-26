@@ -31,6 +31,8 @@ import ImageFlow from '../components/ImageFlow.vue'
 
 export default {
 	name:'MovieList',
+	beforeMount:function(){
+	},
 	mounted:function(){
 	},
 	data:function(){
