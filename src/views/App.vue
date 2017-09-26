@@ -2,7 +2,7 @@
 	<div>
 		<!-- 右侧主体内容 -->
 		<div id="wrapper" v-bind:class="{ 'menu-open': isMenuOpen }" >
-			<p class="title">影讯fgggg</p>
+			<p class="title">影讯</p>
 			<router-view></router-view>
 		</div>
 
