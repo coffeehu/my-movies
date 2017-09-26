@@ -13,11 +13,15 @@
 
 		<!-- 侧滑菜单栏 -->
 		<nav id="menu" class="menu" v-bind:class="{ active: isMenuOpen }">
-			<div class="menu-header"></div>
+			<div class="menu-header">
+				<div class="logo">
+					<img src="../assets/logo.png">
+				</div>
+			</div>
 			<ul class="menu-items">
 				<li class="menu-item" v-for="(item,index) in items" v-bind:class="[{inview:isMenuOpen}, itemClass(index)]">
 					<a href="#" class="menu-item-link" 
-					@click.prevent="itemTouch(index)" 
+					@click.prevent="itemTouch($event,index)" 
 					@transitionend="itemTouchEnd(index)" 
 					ref="itemEls">
 						<span ref="touchEls"></span>
@@ -92,7 +96,7 @@ export default {
 		itemClass:function(i){
 			return "item-"+(i+1);
 		},
-		itemTouch:function(index){
+		itemTouch:function(event,index){
 			var itemEl = this.$refs.itemEls[index];
 			var elWidth = itemEl.offsetWidth,
 				elHeight = itemEl.offsetHeight,
