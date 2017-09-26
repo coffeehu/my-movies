@@ -5,7 +5,8 @@ module.exports = {
   build: {
     env: require('./prod.env'),
     index: path.resolve(__dirname, '../dist/index.html'),
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    //assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot: path.resolve(__dirname, '/data/app/test/dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: './',
     productionSourceMap: true,
@@ -36,7 +37,8 @@ module.exports = {
     cssSourceMap: false,
     proxyTable: {
         '/api': {
-            target: 'http://api.douban.com/v2',
+            //target: 'http://api.douban.com/v2',
+            target: 'http://119.29.195.157:8081/api/',
             changeOrigin: true,
             pathRewrite: {
                 '^/api': ''
