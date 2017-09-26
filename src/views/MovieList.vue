@@ -9,25 +9,19 @@
 			<div class="content">
 				<ul>
 					<li v-for="subject in currentMovies">
-						<div class="movie-box">
-							<img :src="subject.images.medium" class="movie-list-image">
-							<h3 class="movie-list-title">
-								<a href="#">{{subject.title}}</a>
-							</h3>
-							<h5 class="movie-list-original-title">{{subject.original_title}}</h5>
-							<h5 class="movie-list-original-type">类型：{{subject.genres | initType}}</h5>
-							<h5>导演：{{subject.directors | initDirectors}}</h5>
-							<h5>主演：{{subject.casts | initCasts}}</h5>
-						</div>
+						<movie-box class="movie-box" v-bind:subject="subject" @likeEvent="showLikeMessage"></movie-box>
 					</li>
 				</ul>
 			</div>
 		</div>
+		<div class="likeMessage" v-bind:class="{likeMessageActive}"
+		@transitionend="showLikeMessageEnd">已加入到<br/>"我喜欢的"</div>
 	</div>
 </template>
 
 <script>
 import ImageFlow from '../components/ImageFlow.vue'
+import MovieBox from '../components/MovieBox.vue'
 
 export default {
 	name:'MovieList',
@@ -37,12 +31,22 @@ export default {
 	},
 	data:function(){
 		return {
-			currentType:0
+			currentType:0,
+			likeMessageActive:false
 		}
 	},
 	methods:{
 		getMovies:function(type){
 			this.currentType = type;
+		},
+		showLikeMessage:function(){
+/*			if(!this.likeMessageActive)
+				this.likeMessageActive = true;
+			else 
+				this.likeMessageActive = false;*/
+		},
+		showLikeMessageEnd:function(){
+
 		}
 	},
 	computed:{
@@ -63,23 +67,9 @@ export default {
 			return this.$store.state.moviesComingSoon.total;
 		}
 	},
-	filters:{
-		initType:function(value){
-			return value.join("/");
-		},
-		initDirectors:function(value){
-			return value.map(function(v){
-				return v.name;
-			}).join("/");	
-		},
-		initCasts:function(value){
-			return value.map(function(v){
-				return v.name;
-			}).join("/");
-		}
-	},
 	components:{
-		ImageFlow
+		ImageFlow,
+		MovieBox
 	},
 }
 </script>
@@ -110,9 +100,6 @@ export default {
 	border-bottom: 2px solid red;
 }
 /*内容列表栏*/
-.classify .content{
-
-}
 .classify .content ul{
 	list-style: none;
 }
@@ -126,26 +113,26 @@ export default {
 	position: relative;
 	line-height: 25px;
 }
-.classify .content .movie-list-image{
-	float: left;
-	margin-right: 30px;
-}
-.classify .content .movie-box:after{
+.movie-box:after{
  	content: '';
     display: block;
     clear: both;
 }
-.classify .content .movie-list-title{
-	
+
+.likeMessage{
+	position: fixed;
+	width: 10%;
+	height: 8%;
+	top: 47%;
+	left: 45%;
+	background: rgba(128,128,128,0.5);
+	text-align: center;
+	border-radius: 6px;
+	visibility: hidden;
 }
-.classify .content .movie-list-title a{
-	color: #000;
-	font-weight: 500;
+.likeMessageActive{
+	visibility: visible;
 }
-.classify .content .movie-box h5{
-	font-weight: 200;
-}
-.movie-list-original-type{
-	margin-top: 15px;
-}
+
+
 </style>

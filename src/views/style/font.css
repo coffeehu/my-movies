@@ -82,6 +82,7 @@
 }
 .icon-star-full:before {
   content: "\e9d9";
+  color: #FF6347;
 }
 .icon-heart:before {
   content: "\e9da";
