@@ -12,6 +12,7 @@
 						<movie-box class="movie-box" v-bind:subject="subject" @likeEvent="showLikeMessage"></movie-box>
 					</li>
 				</ul>
+				<Copyright class="copyright"></Copyright>
 			</div>
 		</div>
 		<div class="likeMessage" v-bind:class="{likeMessageActive}"
@@ -22,12 +23,21 @@
 <script>
 import ImageFlow from '../components/ImageFlow.vue'
 import MovieBox from '../components/MovieBox.vue'
+import Copyright from './Copyright'
 
 export default {
 	name:'MovieList',
 	beforeMount:function(){
+		console.log("movieList beforeMount")
+		this.$store.dispatch('FETCH_MOVIES',{type:'in_theaters'});
+		this.$store.dispatch('FETCH_MOVIES',{type:'coming_soon'});
 	},
 	mounted:function(){
+		console.log("movieList mounted")
+	},
+	beforeRouteEnter(to, from, next){
+		console.log("movieList beforeRouteEnter");
+		next();
 	},
 	data:function(){
 		return {
@@ -69,7 +79,8 @@ export default {
 	},
 	components:{
 		ImageFlow,
-		MovieBox
+		MovieBox,
+		Copyright
 	},
 }
 </script>
@@ -100,6 +111,9 @@ export default {
 	border-bottom: 2px solid red;
 }
 /*内容列表栏*/
+.classify .content{
+	position: relative;
+}
 .classify .content ul{
 	list-style: none;
 }
