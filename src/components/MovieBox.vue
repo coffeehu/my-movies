@@ -1,15 +1,15 @@
 <template>
 	<div>
-		<img :src="subject.images.medium" class="movie-list-image">
+		<a href="#" @click.prevent="toDetail(subject.id)"><img :src="subject.images.medium" class="movie-list-image"></a>
 		<h3 class="movie-list-title">
-			<a href="#">{{subject.title}}</a>
+			<a href="#" @click.prevent="toDetail(subject.id)">{{subject.title}}</a>
 		</h3>
 		<h5 class="movie-list-original-title">{{subject.original_title}}</h5>
 		<h5 class="movie-list-original-type">类型：{{subject.genres | initType}}</h5>
 		<h5>导演：{{subject.directors | initDirectors}}</h5>
 		<h5>主演：{{subject.casts | initCasts}}</h5>
-		<div class="movie-list-like " :class="{'icon-star-full':isLike,'icon-star-empty':!isLike}" @click="like"></div>
-		<div class="movie-list-record" @click="record" :class="{recordActive:isRecord}">{{recordMessage}}</div>
+		<div class="movie-list-like " :class="{'icon-star-full':isLike,'icon-star-empty':!isLike}" @click="like(subject.id)"></div>
+		<div class="movie-list-record" @click="record(subject.id)" :class="{recordActive:isRecord}">{{recordMessage}}</div>
 	</div>
 </template>
 
@@ -40,22 +40,29 @@ export default {
 		}
 	},
 	methods:{
-		like(){
-			if(!this.isLike){
+		toDetail(id){
+			this.$router.push( { path:`/detail/${id}` } )
+		},
+		like(id){
+			if(!this.isLike){ // 加入喜欢列表
 				this.isLike = true;
-				this.$emit('likeEvent');
-			}else{
+				//this.$emit('likeEvent');
+				this.$store.dispatch('LIKE', {type:0,id:id});
+			}else{ // 取消
 				this.isLike = false;
-				this.$emit('likeEvent');
+				//this.$emit('likeEvent');
+				this.$store.dispatch('LIKE', {type:1,id:id});
 			}
 		},
-		record(){
-			if(!this.isRecord){
+		record(id){
+			if(!this.isRecord){  // 加入看过列表
 				this.isRecord = true;
 				this.recordMessage = "已看过";
-			}else{
+				this.$store.dispatch('RECORD', {type:0,id:id});
+			}else{ // 取消
 				this.isRecord = false;
 				this.recordMessage = "+看过";
+				this.$store.dispatch('RECORD', {type:1,id:id});
 			}
 		}
 	},

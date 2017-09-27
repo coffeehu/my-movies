@@ -3,7 +3,7 @@
 		<div class="wrapper" ref="wrapper">
 			<ul class="view" id="view">
 				<li class="display" v-for="(top,index) in tops" @mouseover="onMouseoverHanlder(displays[index])" @mouseout="onMouseoutHanlder(displays[index])">
-					<img :src="top.images.large" class="display-img" @click="move(displays[index])" >
+					<img :src="top.images.large" class="display-img" @click="move(displays[index])" :movieId="top.id" >
 				</li>
 			</ul>
 			<ul class="reflection" id="reflection">
@@ -25,24 +25,35 @@
 export default {
 	data:function(){
 		return {
+			imageFlow: null,
 			displays:[],
 		}
 	},
+	// 页面跳转后，会触发 detroyed，记得在这里把定时任务给停了
+	destroyed (){
+		console.log("imageFlow destroyed");
+		clearInterval(this.imageFlow.id)
+	},
 	beforeMount:function(){
+		console.log("imageFlow beforeMount")
 	},
 	mounted:function(){
+		console.log("imageFlow mounted")
 	},
 	updated:function(){
+		console.log("imageFlow updated")
 		/*=========图片轮播对象的构造函数=========*/
 		var displays = this.displays;
 
-		function ImageFlow(id,scale){
+		function ImageFlow(id,component,scale){
+			this.component = component; // 当前组件实例
 			this.el = document.getElementById(id);
 			this.width = this.el.clientWidth;
 			this.viewEl = document.getElementById('view'); // 展示栏
 			this.reflectionEl = document.getElementById('reflection'); // 倒影栏
 			this.displays = displays;
 			this.displayEls = this.viewEl.getElementsByClassName('display');
+			this.count = this.displayEls.length;  // 内含的展示图片的数量
 			this.scale = scale;
 			this.id = null; // 定时任务id
 			this.time = 0;
@@ -55,7 +66,6 @@ export default {
 			}
 		}
 
-		var _component = this;
 		// n:起始索引。  time：间隔时间
 		ImageFlow.prototype.run = function(n,time){
 
@@ -76,7 +86,7 @@ export default {
 			*/
 
 			if(!this.displays[n].el.mouseover){
-				_component.onClickHandler(this.displays[n].el,this.scale);
+				this.component.onClickHandler(this.displays[n].el,this.scale);
 			}
 			
 			if(n==this.displays.length-1) toRight=false;
@@ -90,9 +100,8 @@ export default {
 			var _this = this;
 			this.id = setInterval(function(){
 				if(!_this.displays[n].el.mouseover){
-					_component.onClickHandler(_this.displays[n].el, _this.scale);
+					_this.component.onClickHandler(_this.displays[n].el, _this.scale);
 				}
-				//_component.onClickHandler(_this.displays[n].el, _this.scale);
 				if(n==_this.displays.length-1) toRight=false;
 				if(n==0) toRight=true;
 				if(toRight){
@@ -103,7 +112,9 @@ export default {
 			},time);
 		}
 
+
 		/*=========Display 图片展示对象的构造函数============*/
+		var completeNum = 0;  // 图片加载完成的数量
 		function Display(n,el,parent,root,reflectionEl,scale){
 			this.el = el;  // li 元素
 			this.n = this.el.n = n;  // 索引
@@ -112,8 +123,10 @@ export default {
 			this.wrapper = this.el.wrapper = this.root.el.getElementsByClassName('wrapper')[0];
 			this.reflectionEl = this.el.reflectionEl = reflectionEl; // 倒影栏元素
 			this.img = this.el.getElementsByClassName('display-img')[0];
+			this.movieId = this.img.getAttribute('movieId');
 			this.img.width = this.root.width * 0.1;
 			this.img.height = this.img.width * 1.3;
+			this.img.parent = this.el;
 			this.reflectionItem = this.reflectionEl.getElementsByTagName("canvas")[this.n]; // 画布，真正的倒影图片
 			this.el.instance = this;
 
@@ -121,29 +134,51 @@ export default {
 			var li = this.reflectionEl.getElementsByTagName('li')[this.n];
 			this.el.reflection = li; // 设置对应的倒影
 
-			// 图片加载完成后生成倒影
-			var _reflectionItem = this.reflectionItem;
-			this.img.onload = function(){
-				_reflectionItem.width = this.width;
-				_reflectionItem.height = this.height*0.8;
-				
-				var context = _reflectionItem.getContext("2d");
-				context.translate(0, _reflectionItem.height);
+			// 生成倒影
+			function createReflection(img,reflectionItem){
+				reflectionItem.width = img.width;
+				reflectionItem.height = img.height*0.8;
+				var context = reflectionItem.getContext("2d");
+				context.translate(0, reflectionItem.height);
 		      	context.scale(1, -1); 
-				context.drawImage(this, 0, 0, _reflectionItem.width, _reflectionItem.height);
+				context.drawImage(img, 0, 0, reflectionItem.width, reflectionItem.height);
 				context.globalCompositeOperation = "destination-out";
 
-				var gradient = context.createLinearGradient(0, 0, 0, _reflectionItem.height);
+				var gradient = context.createLinearGradient(0, 0, 0, reflectionItem.height);
 				gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
 				gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
 				context.fillStyle = gradient;
-				context.fillRect(0, 0, _reflectionItem.width, _reflectionItem.height);
+				context.fillRect(0, 0, reflectionItem.width, reflectionItem.height);
 			}
-		}
 
-		var imageFlow = new ImageFlow('imageFlow',2.2);
+			// 图片加载完成后生成倒影
+			// 场景：点击大图跳转路由到detail页面，再返回，onload 事件不会触发，因此不会显示倒影。
+			// 所以要配合 img.complete 判断
+			// 跳转路由再返回时，图片被缓存了，img.onload不会被调用，而 complete 为true
+			var _reflectionItem = this.reflectionItem;
+			if(this.img.complete){ 
+				createReflection(this.img,_reflectionItem);
+				this.root.component.$refs.arrow.style.top = this.wrapper.clientHeight*1.1+'px';
+			}else{
+				this.img.onload = function(){
+					createReflection(this,_reflectionItem);
+					completeNum +=1;
+					if(completeNum == this.parent.root.count){ // 此时所有图片全部加载完，这时渲染的 wrapper 的高度才是最终高度
+						console.log("all complete!")
+						console.log(this.parent.wrapper.clientHeight)
+						this.parent.root.component.$refs.arrow.style.top = this.parent.wrapper.clientHeight*1.1+'px';
+					}
+				}
+			}
+			
+		}
+		/*=========Display constructor end============*/
+
+		var imageFlow = new ImageFlow('imageFlow',this,2.2);
+		this.imageFlow = imageFlow;
 		imageFlow.run(1,3000);
-		this.$refs.arrow.style.top = this.$refs.wrapper.clientHeight+'px';
+		
+		//this.$refs.arrow.style.top = this.$refs.wrapper.clientHeight+'px';
 	},
 	computed:{
 		titles:function(){
@@ -216,7 +251,8 @@ export default {
 				el.instance.wrapper.style.left = offset+'px';
 			}else{
 				if(!isArrow){  // 说明是点击了大图，而不是点击了箭头
-					alert("go")
+					console.log(el.instance.movieId)
+					this.$router.push( { path:`/detail/${el.instance.movieId}` } ) // 路由跳转
 				}
 			}
 		}
