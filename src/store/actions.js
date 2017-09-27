@@ -1,4 +1,4 @@
-import {fetchMovies,record,like} from '../api'
+import {fetchMovies,record,like,showRecord} from '../api'
 
 export default {
 	FETCH_MOVIES: function(context, {type}){
@@ -26,5 +26,20 @@ export default {
 	},
 	LIKE:function(context,{type,id}){
 		like(type,id);
+	},
+	SHOWRECORD:function(context){
+		showRecord()
+		.then(function(response){
+			console.log(response);
+			var arr = [];
+			for(var i=0,len=response.length;i<len;i++){
+				var obj = JSON.parse(response[i].json);
+				arr.push(obj);
+			}
+			context.state.record = arr;
+		})
+		.catch(function(error){
+			console.log(error);
+		});
 	}
 }

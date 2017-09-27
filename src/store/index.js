@@ -18,6 +18,7 @@ export default new Vuex.Store({
 			subjects:[],
 			total:0
 		},
+		record:[],
 	},
 	getters,
 	mutations,

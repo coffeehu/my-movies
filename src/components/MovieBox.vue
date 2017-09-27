@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="movie-box">
 		<a href="#" @click.prevent="toDetail(subject.id)"><img :src="subject.images.medium" class="movie-list-image"></a>
 		<h3 class="movie-list-title">
 			<a href="#" @click.prevent="toDetail(subject.id)">{{subject.title}}</a>
@@ -70,6 +70,11 @@ export default {
 </script>
 
 <style scoped>
+.movie-box:after{
+ 	content: '';
+    display: block;
+    clear: both;
+}
 .movie-list-image{
 	float: left;
 	margin-right: 30px;

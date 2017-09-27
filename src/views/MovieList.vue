@@ -75,7 +75,8 @@ export default {
 		},
 		coming_soon_total:function(){
 			return this.$store.state.moviesComingSoon.total;
-		}
+		},
+
 	},
 	components:{
 		ImageFlow,
