@@ -3,7 +3,7 @@
 		<div class="message">
 			<a href="https://github.com/coffeehu" target="_blank" class="title"><h1 class="icon-github">About Me</h1></a>
 			<p><b>Author : </b>Coffee Hu</p>
-			<p><b>Describe : </b>一个 vue 练手项目。移动适配后续也会添加。</p>
+			<p><b>Describe : </b>一个 vue 练手项目，持续构建中。移动适配后续也会添加。</p>
 		</div>
 	</div>
 </template>
