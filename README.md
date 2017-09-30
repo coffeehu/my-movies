@@ -1,6 +1,16 @@
 # my-movies
 
-> A Vue.js project
+> 一个 Vue.js 练手demo（未完成...）
+
+> 访问地址：http://119.29.195.157
+
+## 前端
+vue-cli + vue-router + vuex
+
+## 后台
+#### 数据接口：
+- 正在热映 http://api.douban.com/v2/movie/in_theaters
+- 即将上映 http://api.douban.com/v2/movie/coming_soon
 
 ## Build Setup
 
