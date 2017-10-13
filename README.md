@@ -1,6 +1,11 @@
 # my-movies
 
-> 一个 Vue.js 练手demo（未完成...）
+> 一个 Vue.js 练手demo（包括服务端搭建。未完成）
+
+## 进度
+移动端适配：进行中（70%）....
+中文乱码问题：解决中...
+其他页面：未进行。
 
 ### 访问地址：http://119.29.195.157
 
@@ -14,7 +19,8 @@ Centos 6 + nginx + node + mysql
 - 正在热映 http://api.douban.com/v2/movie/in_theaters
 - 即将上映 http://api.douban.com/v2/movie/coming_soon
 
-node 服务器每天会请求一次上述豆瓣的接口，将数据存入本地，并提供服务。前端请求的就是本地 node 服务器。
+node 服务器每天会请求一次上述豆瓣的接口，将数据存入本地数据库，并提供服务。
+因此前端请求的就是本地 node 服务器。
 
 ## Build Setup
 
